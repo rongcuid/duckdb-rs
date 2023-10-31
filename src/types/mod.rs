@@ -67,10 +67,12 @@ impl ToSql for DateTimeSql {
 //! implements [`ToSql`] or [`FromSql`] for the cases where you want to know if
 //! a value was NULL (which gets translated to `None`).
 
-pub use self::from_sql::{FromSql, FromSqlError, FromSqlResult};
-pub use self::to_sql::{ToSql, ToSqlOutput};
-pub use self::value::Value;
-pub use self::value_ref::{TimeUnit, ValueRef};
+pub use self::{
+    from_sql::{FromSql, FromSqlError, FromSqlResult},
+    to_sql::{ToSql, ToSqlOutput},
+    value::Value,
+    value_ref::{TimeUnit, ValueRef},
+};
 
 use std::fmt;
 
@@ -177,8 +179,10 @@ impl fmt::Display for Type {
 mod test {
     use super::Value;
     use crate::{params, Connection, Error, Result, Statement};
-    use std::f64::EPSILON;
-    use std::os::raw::{c_double, c_int};
+    use std::{
+        f64::EPSILON,
+        os::raw::{c_double, c_int},
+    };
 
     fn checked_memory_handle() -> Result<Connection> {
         let db = Connection::open_in_memory()?;
@@ -251,7 +255,7 @@ mod test {
     fn test_option() -> Result<()> {
         let db = checked_memory_handle()?;
 
-        let s = Some("hello, world!");
+        let s = "hello, world!";
         let b = Some(vec![1u8, 2, 3, 4]);
 
         db.execute("INSERT INTO foo(t) VALUES (?)", [&s])?;
@@ -264,7 +268,7 @@ mod test {
             let row1 = rows.next()?.unwrap();
             let s1: Option<String> = row1.get_unwrap(0);
             let b1: Option<Vec<u8>> = row1.get_unwrap(1);
-            assert_eq!(s.unwrap(), s1.unwrap());
+            assert_eq!(s, s1.unwrap());
             assert!(b1.is_none());
         }
 

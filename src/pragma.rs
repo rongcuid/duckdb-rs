@@ -2,10 +2,12 @@
 
 use std::ops::Deref;
 
-use crate::error::Error;
-use crate::ffi;
-use crate::types::{ToSql, ToSqlOutput, ValueRef};
-use crate::{Connection, DatabaseName, Result, Row};
+use crate::{
+    error::Error,
+    ffi,
+    types::{ToSql, ToSqlOutput, ValueRef},
+    Connection, DatabaseName, Result, Row,
+};
 
 pub struct Sql {
     buf: String,
@@ -269,23 +271,17 @@ fn is_identifier(s: &str) -> bool {
 }
 
 fn is_identifier_start(c: char) -> bool {
-    ('A'..='Z').contains(&c) || c == '_' || ('a'..='z').contains(&c) || c > '\x7F'
+    c.is_ascii_alphabetic() || c == '_' || c > '\x7F'
 }
 
 fn is_identifier_continue(c: char) -> bool {
-    c == '$'
-        || ('0'..='9').contains(&c)
-        || ('A'..='Z').contains(&c)
-        || c == '_'
-        || ('a'..='z').contains(&c)
-        || c > '\x7F'
+    c == '$' || c.is_ascii_alphanumeric() || c == '_' || c > '\x7F'
 }
 
 #[cfg(test)]
 mod test {
     use super::Sql;
-    use crate::pragma;
-    use crate::{Connection, DatabaseName, Result};
+    use crate::{pragma, Connection, DatabaseName, Result};
 
     #[test]
     fn pragma_query_value() -> Result<()> {
